@@ -37,23 +37,25 @@ for index, row in df.iterrows():
 # endregion
 # region Podziel listy po sredniej
 for index, row in df.iterrows():
-    srednie.append(mean(lista[index]))
+    srednie.append(mean(lista[index + 1]))
     if index == liczbakolumn:
         break
 # endregion
 
 print()
 # region Podziel listy na wariancje i odchylenia
-for j in range(liczbakolumn+1):
+for j in range(liczbakolumn + 1):
     wariancja = 0
+    if j == liczbakolumn:
+        break
     for i in range(len(lista[0])):
-        wariancja += (lista[j][i] - srednie[j]) * (lista[j][i] - srednie[j])
+        wariancja += (lista[j + 1][i] - srednie[j]) * (lista[j + 1][i] - srednie[j])
     wariancja = (wariancja / len(lista[0]))
     wariancjatab.append(wariancja)
     odchylenietab.append(np.sqrt(wariancja))
-
+    if j == liczbakolumn:
+        break
 # endregion
-
 # for index, item in enumerate(wariancjatab, start=0):   # Python indexes start at zero
 #     print("Wariancja w kolumnie",index,"wynosi",item)
 # print()
@@ -74,17 +76,17 @@ index_2_kolumny = wariancjatab.index(max(wariancjatab))
 def analizastatystyczna(ktora_kolumna):
     # Przedzialy klasowe
     ilosc_przedzialow_klasowych = np.floor(1 + 3.222 * np.log(len(lista[0])))
-    x_max = max(lista[ktora_kolumna])
-    x_min = min(lista[ktora_kolumna])
+    x_max = max(lista[ktora_kolumna+1])
+    x_min = min(lista[ktora_kolumna+1])
     rozstep_z_proby = x_max - x_min
     h = rozstep_z_proby / ilosc_przedzialow_klasowych
     alfa = 0.01
     a = x_min - alfa / 2
-    moda = max(set(lista[ktora_kolumna]), key=lista[ktora_kolumna].count)
+    moda = max(set(lista[ktora_kolumna+1]), key=lista[ktora_kolumna+1].count)
     if debug:
         print("-------------------Analizuje kolumne o numerze",ktora_kolumna,"---------------------------")
-        print("Kolumna", ktora_kolumna)
-        print("Odchylenie std", ktora_kolumna, "to", odchylenietab[ktora_kolumna])
+        print("Kolumna", ktora_kolumna+1)
+        print("Odchylenie std", ktora_kolumna+1, "to", odchylenietab[ktora_kolumna])
         print("Wyznaczam x_max oraz x_min")
         print("x_max", x_max)
         print("x_min", x_min)
@@ -102,8 +104,8 @@ def analizastatystyczna(ktora_kolumna):
         print(srednie[ktora_kolumna])
         print("Dominanta")
         print(moda)
-        print(np.percentile(df[ktora_kolumna], [25, 50, 75]))
-    lista[ktora_kolumna].sort()
+        print(np.percentile(df[ktora_kolumna+1], [25, 50, 75]))
+    lista[ktora_kolumna+1].sort()
     global Punkty
     Punkty = []
     tabela1 = []
@@ -121,10 +123,10 @@ def analizastatystyczna(ktora_kolumna):
         idxs = [bisect_left(iterable, x) for x in sorted(splitters)]
         return [iterable[x:y] for x, y in zip([0] + idxs, idxs + [len(iterable)]) if x != y]
 
-    tabela1 = split_list(lista[ktora_kolumna], Punkty)
+    tabela1 = split_list(lista[ktora_kolumna+1], Punkty)
 
     def oblicz_kwartyl(numer_kwartyla, index_kol):
-        q = len(lista[index_kol]) * (numer_kwartyla / 4)
+        q = len(lista[index_kol+1]) * (numer_kwartyla / 4)
         q = int(q)
         # print(q)
         i = 0
@@ -157,7 +159,7 @@ def analizastatystyczna(ktora_kolumna):
         deltai = h
         # print("deltai", deltai)
         # print("dolna granica i-tego przedzialu", tabela1[ktory_przedzial][0])
-        Liczebnosc_proby = len(lista[index_kol])
+        Liczebnosc_proby = len(lista[index_kol+1])
         KWARTYL = tabela1[ktory_przedzial][0] + (
                 (((numer_kwartyla / 4) * Liczebnosc_proby - ni) / len(tabela1[ktory_przedzial])) * deltai)
 
